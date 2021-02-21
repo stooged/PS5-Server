@@ -13,11 +13,9 @@ static const char serverKey[] = "-----BEGIN PRIVATE KEY-----\r\nMIICdgIBADANBgkq
 
 String AP_SSID = "PS5_WEB_AP";
 String AP_PASS = "password";
-String PS5_LANG = "gb";
 
 IPAddress Server_IP(10,1,1,1);
 IPAddress Subnet_Mask(255,255,255,0);
-
 
 
 void sendindex()
@@ -26,14 +24,6 @@ void sendindex()
     webServer.setContentLength(tmphtm.length());
     webServer.send(200, "text/html", tmphtm);
 }
-
-
-
-void redirectToHTTP() {
-  sWebServer.sendHeader("Location", String("http://" + Server_IP.toString() + "/index.html" ), true);
-  sWebServer.send(301, "text/plain", "");
-}
-
 
 
 void setup(void) 
@@ -60,18 +50,15 @@ void setup(void)
   webServer.on("/index.html", HTTP_GET, sendindex);
   webServer.onNotFound([]() {
   webServer.send(404, "text/plain", "Not Found");
-  Serial.println("[HTTP] " + webServer.uri());
+  Serial.println(webServer.uri());
   });
-
 
 
   sWebServer.getServer().setRSACert(new X509List(serverCert), new PrivateKey(serverKey));
-  sWebServer.on("/document/" + PS5_LANG + "/ps5/", HTTP_GET, redirectToHTTP);
   sWebServer.onNotFound([]() {
-  sWebServer.send(404, "text/plain", "Not Found");
-  Serial.println("[HTTPS] " + sWebServer.uri());
+  sWebServer.sendHeader("Location", String("http://" + Server_IP.toString() + "/index.html" ), true);
+  sWebServer.send(301, "text/plain", "");
   });
-
 
 
   sWebServer.begin();
