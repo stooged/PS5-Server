@@ -18,22 +18,86 @@ IPAddress Server_IP(10,1,1,1);
 IPAddress Subnet_Mask(255,255,255,0);
 
 
-void sendindex()
-{
+String getContentType(String filename){
+  if(filename.endsWith(".htm")) return "text/html";
+  else if(filename.endsWith(".html")) return "text/html";
+  else if(filename.endsWith(".css")) return "text/css";
+  else if(filename.endsWith(".js")) return "application/javascript";
+  else if(filename.endsWith(".png")) return "image/png";
+  else if(filename.endsWith(".gif")) return "image/gif";
+  else if(filename.endsWith(".jpg")) return "image/jpeg";
+  else if(filename.endsWith(".ico")) return "image/x-icon";
+  else if(filename.endsWith(".xml")) return "text/xml";
+  else if(filename.endsWith(".pdf")) return "application/x-pdf";
+  else if(filename.endsWith(".zip")) return "application/x-zip";
+  else if(filename.endsWith(".gz")) return "application/x-gzip";
+  return "text/plain";
+}
+
+
+void handleSpiffsHtml() {
+  if (loadFromSpiffs(webServer.uri())) {
+    return;
+  }
+  String message = "\n\n";
+  message += "URI: ";
+  message += webServer.uri();
+  message += "\nMethod: ";
+  message += (webServer.method() == HTTP_GET) ? "GET" : "POST";
+  message += "\nArguments: ";
+  message += webServer.args();
+  message += "\n";
+  for (uint8_t i = 0; i < webServer.args(); i++) {
+    message += " NAME:" + webServer.argName(i) + "\n VALUE:" + webServer.arg(i) + "\n";
+  }
+  webServer.send(404, "text/plain", "Not Found");
+  Serial.print(message);
+}
+
+
+bool loadFromSpiffs(String path) {
+
+  if (path.equals("/")) {
+    path += "index.html";
+  }
+
+  if (path.endsWith("index.html") && !SPIFFS.exists(path)) {
     String tmphtm = "<!DOCTYPE html><html><head><style>body { background-color: #1451AE;color: #ffffff;font-size: 14px; font-weight: bold; margin: 0 0 0 0.0; padding: 0.4em 0.4em 0.4em 0.6em;}</style></head><center><br><br><br><br><br><br>ESP</center></html>";
     webServer.setContentLength(tmphtm.length());
     webServer.send(200, "text/html", tmphtm);
+    return true;
+  }
+
+  if (SPIFFS.exists(path)){
+    String dataType = getContentType(path);
+    File dataFile = SPIFFS.open(path, "r");
+  if (!dataFile) {
+    return false;
+  }
+
+  if (webServer.streamFile(dataFile, dataType) != dataFile.size()) {
+    Serial.println("Sent less data than expected!");
+  }
+    dataFile.close();
+    return true;
+  }
+  else
+  {
+    return false;
+  }
 }
+
 
 
 void setup(void) 
 {
   Serial.begin(115200);
   Serial.setDebugOutput(true);
-
   Serial.println("SSID: " + AP_SSID);
   Serial.println("Password: " + AP_PASS);
   Serial.println("WEB Server IP: " + Server_IP.toString());
+
+  SPIFFS.begin();
 
   WiFi.mode(WIFI_AP);
   WiFi.softAPConfig(Server_IP, Server_IP, Subnet_Mask);
@@ -46,12 +110,8 @@ void setup(void)
   dnsServer.start(53, "*", Server_IP);
   Serial.println("DNS server started");
 
-  
-  webServer.on("/index.html", HTTP_GET, sendindex);
-  webServer.onNotFound([]() {
-  webServer.send(404, "text/plain", "Not Found");
-  Serial.println(webServer.uri());
-  });
+
+  webServer.onNotFound(handleSpiffsHtml);
 
 
   sWebServer.getServer().setRSACert(new X509List(serverCert), new PrivateKey(serverKey));
