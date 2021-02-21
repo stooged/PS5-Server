@@ -13,7 +13,7 @@ static const char serverKey[] = "-----BEGIN PRIVATE KEY-----\r\nMIICdgIBADANBgkq
 
 String AP_SSID = "PS5_WEB_AP";
 String AP_PASS = "password";
-String PS5_REGION = "gb"; // jp, us, au, uk, eu, kr, sa, tw, ru, mx, cn
+String PS5_LANG = "gb";
 
 IPAddress Server_IP(10,1,1,1);
 IPAddress Subnet_Mask(255,255,255,0);
@@ -66,7 +66,7 @@ void setup(void)
 
 
   sWebServer.getServer().setRSACert(new X509List(serverCert), new PrivateKey(serverKey));
-  sWebServer.on("/document/" + PS5_REGION + "/ps5/", HTTP_GET, redirectToHTTP);
+  sWebServer.on("/document/" + PS5_LANG + "/ps5/", HTTP_GET, redirectToHTTP);
   sWebServer.onNotFound([]() {
   sWebServer.send(404, "text/plain", "Not Found");
   Serial.println("[HTTPS] " + sWebServer.uri());
