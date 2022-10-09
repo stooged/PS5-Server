@@ -4,6 +4,8 @@ This is a project designed for the <a href=https://www.wemos.cc/en/latest/d1/d1_
 the esp8266 server will redirect the user guide https request to the servers internal http index page.<br>
 <br><br>
 
+this is just a basic server to host the files from https://github.com/Cryptogenic/PS5-4.03-Kernel-Exploit
+
 
 Settings for the D1 Mini PRO<br><br>
 The CPU frequency must be <b>160 MHz</b><br>
