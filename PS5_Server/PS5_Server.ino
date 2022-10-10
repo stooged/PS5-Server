@@ -94,6 +94,27 @@ bool loadFromSpiffs(String path) {
 }
 
 
+void handleElfload(String fileName)
+{
+  WiFiClient client;
+  if (!client.connect(webServer.client().remoteIP(), 9020)) {
+    delay(1000);
+    webServer.send(500, "text/plain", "Internal Server Error");
+  }
+  else
+  {
+     delay(1000);
+     File dataFile = SPIFFS.open(fileName, "r");
+     if (dataFile) {
+       while (dataFile.available()) {
+         client.write(dataFile.read());
+       }
+    dataFile.close(); 
+  }
+  client.stop();
+  webServer.send(200, "text/plain", "OK");
+  }
+}
 
 
 
