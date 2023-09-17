@@ -26,9 +26,6 @@ MD5Builder md5;
 DNSServer dnsServer;
 ESP8266WebServer webServer;
 ESP8266WebServerSecure sWebServer(443);
-boolean hasEnabled = false;
-int ftemp = 70;
-long enTime = 0;
 File upFile;
 String firmwareVer = "1.00";
 
