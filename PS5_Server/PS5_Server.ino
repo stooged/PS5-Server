@@ -912,6 +912,7 @@ void setup(void)
   sWebServer.sendHeader("Location", String("http://" + Server_IP.toString() + "/index.html" ), true);
   sWebServer.send(301, "text/plain", "");
   });
+  sWebServer.begin();
 
   
   //Serial.println("HTTP server started");
