@@ -884,6 +884,7 @@ void setup(void)
 
 
   webServer.onNotFound(handleNotFound);
+  /*
   webServer.on("/update.html", HTTP_POST, []() {} ,handleFwUpdate);
   webServer.on("/update.html", HTTP_GET, handleUpdateHtml);
   webServer.on("/upload.html", HTTP_POST, []() {
@@ -901,6 +902,7 @@ void setup(void)
   webServer.on("/admin.html", HTTP_GET, handleAdminHtml);
   webServer.on("/reboot.html", HTTP_GET, handleRebootHtml);
   webServer.on("/reboot.html", HTTP_POST, handleReboot);
+  */
   webServer.begin(WEB_PORT);
 
 
@@ -919,4 +921,5 @@ void setup(void)
 void loop(void) {
   dnsServer.processNextRequest();
   webServer.handleClient();
+  sWebServer.handleClient();
 }
