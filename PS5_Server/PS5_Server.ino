@@ -4,9 +4,7 @@
 #include <DNSServer.h>
 #include <ESP8266mDNS.h>
 #include <FS.h>
-#include "etahen.h"
-#include "offsets.h"
-#include "exploit.h"
+
 
 
                      // use LITTLEFS not SPIFFS [ true / false ]
@@ -190,13 +188,30 @@ String getContentType(String filename){
 }
 
 
-void handleBinload(String pload, int port)
+void handleBinload(String pload)
 {
  int scode;
   WiFiClient client;
-  if (!client.connect(webServer.client().remoteIP(), port)) {
+  if (!client.connect(webServer.client().remoteIP(), 9090)) {
     delay(1000);
     scode = 400;
+    if (!client.connect(webServer.client().remoteIP(), 9020)) {
+      delay(1000);
+    scode = 400;
+    }
+    else
+    {
+     delay(1000);
+     File dataFile = FILESYS.open(pload, "r");
+     if (dataFile) {
+       while (dataFile.available()) {
+         client.write(dataFile.read());
+       }
+    dataFile.close(); 
+    }
+    client.stop();
+    scode = 200;
+    }
   }
   else
   {
@@ -232,158 +247,14 @@ bool loadFromSdCard(String path) {
   return false;
  }
 
+
+  if (path.endsWith(".bin") && webServer.method() == HTTP_POST)
+  {
+    handleBinload(path);
+    return true;
+  }
+  
   String dataType = getContentType(path);
-
-  if (path.endsWith("/index.html"))
-  {
-    webServer.sendHeader("Content-Encoding", "gzip");
-    webServer.send(200, dataType.c_str(), index_gz, sizeof(index_gz));
-    return true;
-  }
-
-
-  if (path.endsWith("/3.00.js"))
-  {
-    webServer.sendHeader("Content-Encoding", "gzip");
-    webServer.send(200, dataType.c_str(), o3_00_gz, sizeof(o3_00_gz));
-    return true;
-  }
-
-  if (path.endsWith("/3.10.js"))
-  {
-    webServer.sendHeader("Content-Encoding", "gzip");
-    webServer.send(200, dataType.c_str(), o3_10_gz, sizeof(o3_10_gz));
-    return true;
-  }
-
-  if (path.endsWith("/3.20.js"))
-  {
-    webServer.sendHeader("Content-Encoding", "gzip");
-    webServer.send(200, dataType.c_str(), o3_20_gz, sizeof(o3_20_gz));
-    return true;
-  }
-
-  if (path.endsWith("/3.21.js"))
-  {
-    webServer.sendHeader("Content-Encoding", "gzip");
-    webServer.send(200, dataType.c_str(), o3_21_gz, sizeof(o3_21_gz));
-    return true;
-  }
-
-  if (path.endsWith("/4.00.js"))
-  {
-    webServer.sendHeader("Content-Encoding", "gzip");
-    webServer.send(200, dataType.c_str(), o4_00_gz, sizeof(o4_00_gz));
-    return true;
-  }
-
-  if (path.endsWith("/4.02.js"))
-  {
-    webServer.sendHeader("Content-Encoding", "gzip");
-    webServer.send(200, dataType.c_str(), o4_02_gz, sizeof(o4_02_gz));
-    return true;
-  }
-
-  if (path.endsWith("/4.03.js"))
-  {
-    webServer.sendHeader("Content-Encoding", "gzip");
-    webServer.send(200, dataType.c_str(), o4_03_gz, sizeof(o4_03_gz));
-    return true;
-  }
-
-  if (path.endsWith("/4.50.js"))
-  {
-    webServer.sendHeader("Content-Encoding", "gzip");
-    webServer.send(200, dataType.c_str(), o4_50_gz, sizeof(o4_50_gz));
-    return true;
-  }
-
-  if (path.endsWith("/4.51.js"))
-  {
-    webServer.sendHeader("Content-Encoding", "gzip");
-    webServer.send(200, dataType.c_str(), o4_51_gz, sizeof(o4_51_gz));
-    return true;
-  }
-
-
-  if (path.endsWith("/custom_host_stuff.js"))
-  {
-    webServer.sendHeader("Content-Encoding", "gzip");
-    webServer.send(200, dataType.c_str(), custom_host_stuff_gz, sizeof(custom_host_stuff_gz));
-    return true;
-  }
-
-  if (path.endsWith("/exploit.js"))
-  {
-    webServer.sendHeader("Content-Encoding", "gzip");
-    webServer.send(200, dataType.c_str(), exploit_gz, sizeof(exploit_gz));
-    return true;
-  }
-
-  if (path.endsWith("/int64.js"))
-  {
-    webServer.sendHeader("Content-Encoding", "gzip");
-    webServer.send(200, dataType.c_str(), int64_gz, sizeof(int64_gz));
-    return true;
-  }
-
-  if (path.endsWith("/main.css"))
-  {
-    webServer.sendHeader("Content-Encoding", "gzip");
-    webServer.send(200, dataType.c_str(), main_gz, sizeof(main_gz));
-    return true;
-  }
-
-  if (path.endsWith("/rop.js"))
-  {
-    webServer.sendHeader("Content-Encoding", "gzip");
-    webServer.send(200, dataType.c_str(), rop_gz, sizeof(rop_gz));
-    return true;
-  }
-
-  if (path.endsWith("/rop_slave.js"))
-  {    
-    webServer.sendHeader("Content-Encoding", "gzip");
-    webServer.send(200, dataType.c_str(), rop_slave_gz, sizeof(rop_slave_gz));
-    return true;
-  }
-
-  if (path.endsWith("/webkit.js"))
-  {   
-    webServer.sendHeader("Content-Encoding", "gzip");
-    webServer.send(200, dataType.c_str(), webkit_gz, sizeof(webkit_gz));
-    return true;
-  }
-
-  if (path.endsWith("/payload_map.js"))
-  {
-    handlePayloads();
-    return true;
-  }
-
-
-  if (path.endsWith("/ethen.bin"))
-  {
-    webServer.sendHeader("Content-Encoding", "gzip");
-    webServer.send(200, dataType.c_str(), etahen, sizeof(etahen));
-    return true;
-  }
-
-/*
-  if (path.endsWith(".elf"))
-  {
-    handleBinload(path, 9027);
-    return true;
-  }
-  
-
-  if (path.endsWith(".bin"))
-  {
-    handleBinload(path, 9020);
-    return true;
-  }
-*/
-  
   bool isGzip = false;
 
   File dataFile;
@@ -762,48 +633,6 @@ void handleRebootHtml()
   String htmStr = "<!DOCTYPE html><html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>ESP Reboot</title><style type=\"text/css\">#loader {  z-index: 1;   width: 50px;   height: 50px;   margin: 0 0 0 0;   border: 6px solid #f3f3f3;   border-radius: 50%;   border-top: 6px solid #3498db;   width: 50px;   height: 50px;   -webkit-animation: spin 2s linear infinite;   animation: spin 2s linear infinite; } @-webkit-keyframes spin {  0%  {  -webkit-transform: rotate(0deg);  }  100% {  -webkit-transform: rotate(360deg); }}@keyframes spin {  0% { transform: rotate(0deg); }  100% { transform: rotate(360deg); }} body { background-color: #1451AE; color: #ffffff; font-size: 20px; font-weight: bold; margin: 0 0 0 0.0; padding: 0.4em 0.4em 0.4em 0.6em;}   input[type=\"submit\"]:hover { background: #ffffff; color: green; }input[type=\"submit\"]:active { outline-color: green; color: green; background: #ffffff; } #msgfmt { font-size: 16px; font-weight: normal;}#status { font-size: 16px;  font-weight: normal;} </style><script>function statusRbt() { var answer = confirm(\"Are you sure you want to reboot?\");  if (answer) {document.getElementById(\"reboot\").style.display=\"none\";   document.getElementById(\"status\").innerHTML = \"<div id='loader'></div><br>Rebooting ESP Board\"; return true;  }else {   return false;  }}</script></head><body><center><form action=\"/reboot.html\" method=\"post\"><p>ESP Reboot<br><br></p><p id=\"msgrbt\">This will reboot the esp board</p><div><p id=\"status\"></p><input id=\"reboot\" type=\"submit\" value=\"Reboot ESP\" onClick=\"return statusRbt();\" style=\"display: block;\"></div></form><center></body></html>";
   webServer.setContentLength(htmStr.length());
   webServer.send(200, "text/html", htmStr);
-}
-
-
-void handlePayloads()
-{
-  String output = "const payload_map =\r\n[";
-  output += "{\r\n";
-  output += "displayTitle: 'etaHEN',\r\n"; //internal etahen bin
-  output += "description: 'Runs With 3.xx and 4.xx. FPKG enabler For FW 4.03-4.51 Only.',\r\n";  
-  output += "fileName: 'ethen.bin',\r\n";
-  output += "author: 'LightningMods_, sleirsgoevy, ChendoChap, astrelsky, illusion',\r\n";
-  output += "source: 'https://github.com/LightningMods/etaHEN',\r\n";
-  output += "version: '1.2 beta'\r\n}\r\n";
-  
-  Dir dir = FILESYS.openDir("/");
-  while(dir.next())
-  {
-    File file = dir.openFile("r");
-    String fname = String(file.name());
-    fname.replace("/", "");
-    if (fname.endsWith(".gz"))
-    {
-      fname = fname.substring(0, fname.length() - 3);
-    }
-    if (fname.length() > 0 && !file.isDirectory() && fname.endsWith(".bin") || fname.endsWith(".elf"))
-    {
-      String fnamev = fname;
-      fnamev.replace(".bin", "");
-      fnamev.replace(".elf", "");
-      output += ",{\r\n";
-      output += "displayTitle: '" + fnamev + "',\r\n";
-      output += "description: '" + fname + "',\r\n";  
-      output += "fileName: '" + fname + "',\r\n";
-      output += "author: '',\r\n";
-      output += "source: '',\r\n";
-      output += "version: '1'\r\n}\r\n";
-    }
-    file.close();
-  }
-  output += "\r\n];";
-  webServer.setContentLength(output.length());
-  webServer.send(200, "application/javascript", output);
 }
 
 
