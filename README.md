@@ -4,7 +4,9 @@ This is a project designed for the <a href=https://www.wemos.cc/en/latest/d1/d1_
 the esp8266 server will redirect the user guide https request to the servers internal http index page.<br>
 <br><br>
 
-this is just a basic server to host the files from https://github.com/Cryptogenic/PS5-4.03-Kernel-Exploit
+it is for the <a href=https://github.com/Cryptogenic/PS5-IPV6-Kernel-Exploit>PS5 3.xx / 4.xx Kernel Exploit</a>.
+
+using this fork of the exploit <a href=https://github.com/idlesauce/PS5-Exploit-Host>PS5 3.xx / 4.xx Kernel Exploit</a> by idlesauce.
 
 
 Settings for the D1 Mini PRO<br><br>
