@@ -774,7 +774,7 @@ void handlePayloads()
   output += "fileName: 'ethen.bin',\r\n";
   output += "author: 'LightningMods_, sleirsgoevy, ChendoChap, astrelsky, illusion',\r\n";
   output += "source: 'https://github.com/LightningMods/etaHEN',\r\n";
-  output += "version: '1.2 beta'\r\n}\r\n";
+  output += "version: 'v1.2 beta'\r\n}\r\n";
   
   Dir dir = FILESYS.openDir("/");
   while(dir.next())
@@ -797,7 +797,7 @@ void handlePayloads()
       output += "fileName: '" + fname + "',\r\n";
       output += "author: '',\r\n";
       output += "source: '',\r\n";
-      output += "version: '1'\r\n}\r\n";
+      output += "version: ''\r\n}\r\n";
     }
     file.close();
   }
