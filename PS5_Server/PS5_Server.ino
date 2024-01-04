@@ -770,11 +770,11 @@ void handlePayloads()
   String output = "const payload_map =\r\n[";
   output += "{\r\n";
   output += "displayTitle: 'etaHEN',\r\n"; //internal etahen bin
-  output += "description: 'Runs With 3.xx and 4.xx. FPKG enabler For FW 4.03-4.51 Only.',\r\n";  
+  output += "description: 'Runs With 3.xx and 4.xx. FPKG enabler For FW 3.xx / 4.03-4.51 Only.',\r\n";  
   output += "fileName: 'ethen.bin',\r\n";
   output += "author: 'LightningMods_, sleirsgoevy, ChendoChap, astrelsky, illusion',\r\n";
   output += "source: 'https://github.com/LightningMods/etaHEN',\r\n";
-  output += "version: 'v1.2 beta'\r\n}\r\n";
+  output += "version: 'v1.3 beta'\r\n}\r\n";
   
   Dir dir = FILESYS.openDir("/");
   while(dir.next())
