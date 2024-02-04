@@ -7,7 +7,7 @@
 #include "etahen.h"
 #include "offsets.h"
 #include "exploit.h"
-
+#include "module.h"
 
                      // use LITTLEFS not SPIFFS [ true / false ]
 #define USELFS false // LITTLEFS will be used instead of SPIFFS for the storage filesystem.
@@ -305,6 +305,47 @@ bool loadFromSdCard(String path) {
     return true;
   }
 
+  if (path.endsWith("/module/int64.js"))
+  {
+    webServer.sendHeader("Content-Encoding", "gzip");
+    webServer.send(200, dataType.c_str(), int64m_gz, sizeof(int64m_gz));
+    return true;
+  }
+
+  if (path.endsWith("/module/utils.js"))
+  {
+    webServer.sendHeader("Content-Encoding", "gzip");
+    webServer.send(200, dataType.c_str(), utils_gz, sizeof(utils_gz));
+    return true;
+  }
+
+  if (path.endsWith("/module/constants.js"))
+  {
+    webServer.sendHeader("Content-Encoding", "gzip");
+    webServer.send(200, dataType.c_str(), constants_gz, sizeof(constants_gz));
+    return true;
+  }
+
+  if (path.endsWith("/module/mem.js"))
+  {
+    webServer.sendHeader("Content-Encoding", "gzip");
+    webServer.send(200, dataType.c_str(), mem_gz, sizeof(mem_gz));
+    return true;
+  }
+
+  if (path.endsWith("/module/memtools.js"))
+  {
+    webServer.sendHeader("Content-Encoding", "gzip");
+    webServer.send(200, dataType.c_str(), memtools_gz, sizeof(memtools_gz));
+    return true;
+  }
+
+  if (path.endsWith("/module/rw.js"))
+  {
+    webServer.sendHeader("Content-Encoding", "gzip");
+    webServer.send(200, dataType.c_str(), rw_gz, sizeof(rw_gz));
+    return true;
+  }
 
   if (path.endsWith("/custom_host_stuff.js"))
   {
@@ -348,10 +389,17 @@ bool loadFromSdCard(String path) {
     return true;
   }
 
-  if (path.endsWith("/webkit.js"))
+  if (path.endsWith("/webkit_fontface.js"))
   {   
     webServer.sendHeader("Content-Encoding", "gzip");
-    webServer.send(200, dataType.c_str(), webkit_gz, sizeof(webkit_gz));
+    webServer.send(200, dataType.c_str(), webkit_fontface_gz, sizeof(webkit_fontface_gz));
+    return true;
+  }
+
+  if (path.endsWith("/webkit_psfree.js"))
+  {   
+    webServer.sendHeader("Content-Encoding", "gzip");
+    webServer.send(200, dataType.c_str(), webkit_psfree_gz, sizeof(webkit_psfree_gz));
     return true;
   }
 
