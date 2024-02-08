@@ -4,17 +4,26 @@
 #include <DNSServer.h>
 #include <ESP8266mDNS.h>
 #include <FS.h>
-#include "etahen.h"
 #include "offsets.h"
-#include "exploit.h"
 #include "module.h"
+
 
                      // use LITTLEFS not SPIFFS [ true / false ]
 #define USELFS false // LITTLEFS will be used instead of SPIFFS for the storage filesystem.
                      // you can find the littlefs sketch data upload tool here https://github.com/earlephilhower/arduino-esp8266littlefs-plugin/releases
 
+                     // enable internal etahen.h [ true / false ]
+#define INTHEN true  // etahen is placed in the app partition to free up space on the storage for other payloads. 
+                     // with this enabled you do not upload etahen to the board, set this to false if you wish to upload etahen.
+
+                      // enable autohen [ true / false ]
+#define AUTOHEN false // this will load etaHen instead of the normal index/payload selection page, use this if you only want hen and no other payloads.
+                      // pressing R2 on the controller will stop the auto load and allow you to select between the psfree and fontface exploits.
+                      // if you wish to update the etaHen payload name it "etahen.bin" and upload it to the board storage to override the internal copy. 
 
 
+#include "etahen.h"
+#include "exploit.h"
 #if USELFS
 #include <LittleFS.h>
 #define FILESYS LittleFS 
@@ -231,7 +240,12 @@ bool loadFromSdCard(String path) {
  {
   return false;
  }
-
+ 
+ if (path.equals("/"))
+ {
+   path = "/index.html";
+ }
+ 
   String dataType = getContentType(path);
 
   if (path.endsWith("/index.html"))
@@ -410,28 +424,6 @@ bool loadFromSdCard(String path) {
   }
 
 
-  if (path.endsWith("/ethen.bin"))
-  {
-    webServer.sendHeader("Content-Encoding", "gzip");
-    webServer.send(200, dataType.c_str(), etahen, sizeof(etahen));
-    return true;
-  }
-
-/*
-  if (path.endsWith(".elf"))
-  {
-    handleBinload(path, 9027);
-    return true;
-  }
-  
-
-  if (path.endsWith(".bin"))
-  {
-    handleBinload(path, 9020);
-    return true;
-  }
-*/
-  
   bool isGzip = false;
 
   File dataFile;
@@ -450,6 +442,14 @@ bool loadFromSdCard(String path) {
         webServer.send(200, "text/html", defaultIndex);
         return true;
      }
+#if INTHEN       
+     if (path.endsWith("/etahen.bin"))
+     {
+        webServer.sendHeader("Content-Encoding", "gzip");
+        webServer.send(200, dataType.c_str(), etahen_gz, sizeof(etahen_gz));
+        return true;
+     }
+#endif     
     return false;
   }
   if (webServer.hasArg("download")) {
@@ -819,10 +819,10 @@ void handlePayloads()
   output += "{\r\n";
   output += "displayTitle: 'etaHEN',\r\n"; //internal etahen bin
   output += "description: 'Runs With 3.xx and 4.xx. FPKG enabler For FW 3.xx / 4.03-4.51 Only.',\r\n";  
-  output += "fileName: 'ethen.bin',\r\n";
+  output += "fileName: 'etahen.bin',\r\n";
   output += "author: 'LightningMods_, sleirsgoevy, ChendoChap, astrelsky, illusion',\r\n";
   output += "source: 'https://github.com/LightningMods/etaHEN',\r\n";
-  output += "version: 'v1.3 beta'\r\n}\r\n";
+  output += "version: 'v1.5 beta'\r\n}\r\n";
   
   Dir dir = FILESYS.openDir("/");
   while(dir.next())
