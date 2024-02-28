@@ -6,7 +6,7 @@ the esp8266 server will redirect the user guide https request to the servers int
 
 it is for the <a href=https://github.com/Cryptogenic/PS5-IPV6-Kernel-Exploit>PS5 3.xx / 4.xx Kernel Exploit</a>.
 
-using this fork of the exploit <a href=https://github.com/idlesauce/PS5-Exploit-Host>PS5 3.xx / 4.xx Kernel Exploit</a> by idlesauce.
+using this fork of the exploit <a href=https://github.com/idlesauce/PS5-Exploit-Host>PS5 3.xx / 4.xx Kernel Exploit</a> by idlesauce and <a href=https://github.com/LightningMods/etaHEN>etaHEN</a> by LightningMods.
 
 
 Settings for the D1 Mini PRO<br><br>
